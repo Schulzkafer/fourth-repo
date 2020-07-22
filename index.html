@@ -1,24 +1,154 @@
-<!doctype html>
-<body>
-<input type="file" onchange="readFile(this)">
-
-<script>
-	alert(666)
-function readFile(input) {
-  let file = input.files[0];
-
-  let reader = new FileReader();
-
-  reader.readAsText(file);
-
-  reader.onload = function() {
-    console.log(reader.result);
-  };
-
-  reader.onerror = function() {
-    console.log(reader.error);
-  };
-
+<!DOCTYPE HTML>
+<html>
+<head>
+  <meta charset="utf-8">
+<style>
+div#board {
+  position:relative;
+  width:400px;
+  height:423.6px;
+  margin:auto;
+  background-color: #57471e;
 }
+table {
+  border-spacing: 2px;
+}
+td {
+  width:50px;
+  height:50px;
+  background-color: #7cfc00;
+  padding: 1px;
+ }
+.snake {
+  background-color:red;
+}
+.food {
+  background: green url(pictures/rabbit.png);
+  background-size: 45px;
+  background-repeat: no-repeat;
+  background-position: center;
+  }
+</style>
+
+</head>
+<body>
+
+<div id ="board">
+<table>
+<tr>
+  <td id="00"></td><td id="01"></td><td id="02"></td><td id="03"></td><td id="04"></td><td id="05"></td><td id="06"></td><td id="07"></td>
+</tr>
+<tr>
+  <td id="10"></td><td id="11"></td><td id="12" class="food"></td><td id="13"></td><td id="14"></td><td id="15"></td><td id="16"></td><td id="17"></td>
+</tr>
+<tr>
+  <td id="20"></td><td id="21"></td><td id="22"></td><td id="23"></td><td id="24"></td><td id="25"></td><td id="26"></td><td id="27"></td>
+</tr>
+<tr>
+  <td id="30"></td><td id="31"></td><td id="32"></td><td id="33"></td><td id="34"></td><td id="35"></td><td id="36"></td><td id="37"></td>
+</tr>
+<tr>
+  <td id="40"></td><td id="41"></td><td id="42"></td><td id="43"></td><td id="44" class="food"></td><td id="45"class="snake"></td><td id="46"></td><td id="47"></td>
+</tr>
+<tr>
+  <td id="50"></td><td id="51"></td><td id="52"></td><td id="53"></td><td id="54"></td><td id="55"></td><td id="56"></td><td id="57"></td>
+</tr>
+<tr>
+  <td id="60"></td><td id="61"></td><td id="62"></td><td id="63"></td><td id="64"></td><td id="65"></td><td id="66"></td><td id="67"></td>
+</tr>
+<tr>
+  <td id="70"></td><td id="71"></td><td id="72"></td><td id="73"></td><td id="74"></td><td id="75"></td><td id="76"></td><td id="77"></td>
+</tr>
+
+ <script>
+'use strict';
+let table = document.querySelector('table');
+let direction ='';
+let snake = {
+  headY:4,
+  headX:5,
+  length:1,
+ }
+
+let pos = '';
+let memory = [];
+pos = table.rows[snake.headY].cells[snake.headX];
+memory.push(pos);
+//--------------------------Вверх-----------------------------------------
+document.addEventListener('keydown', function(event) {
+  if (event.code == 'KeyW' || event.code =='ArrowUp') {
+          move (-1,0);
+
+if (pos.classList.contains('food')) {
+eat(1,0);
+}
+   }
+})
+document.addEventListener('keydown', function(event) {
+  if (event.code == 'KeyS' || event.code =='ArrowDown') {
+          move (1,0);
+
+if (pos.classList.contains('food')) {
+eat(-1,0);
+}
+   }
+})
+document.addEventListener('keydown', function(event) {
+  if (event.code == 'KeyA' || event.code =='ArrowLeft') {
+        move (0,-1);
+if (pos.classList.contains('food')) {
+eat(0,1);
+}
+   }
+})
+
+document.addEventListener('keydown', function(event) {
+  if (event.code == 'KeyD' || event.code =='ArrowRight') {
+          move (0,1);
+
+if (pos.classList.contains('food')) {
+eat(0,-1);
+}
+   }
+})
+
+
+
+
+function move (Y, X) {
+for (let elem of memory) {
+if (elem.classList.contains('snake')) {
+  console.log(elem)
+  elem.classList.remove('snake');
+    break;
+}
+}
+
+
+  
+pos = table.rows[snake.headY+=Y].cells[snake.headX+=X];
+pos.classList.add('snake');
+memory.push(pos);
+  console.log(memory)
+}
+
+function eat(Y,X) {
+pos.classList.remove('food');
+let i = 0;
+  console.log(memory)
+for (let elem of memory) {
+if (elem.classList.contains('snake')) {
+   memory[i-1].classList.add('snake');
+  break;
+}
+i++;
+}
+}
+
+
+
+
 </script>
+
 </body>
+</html>
