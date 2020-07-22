@@ -39,7 +39,7 @@ td {
   <td id="00"></td><td id="01"></td><td id="02"></td><td id="03"></td><td id="04"></td><td id="05"></td><td id="06"></td><td id="07"></td>
 </tr>
 <tr>
-  <td id="10"></td><td id="11"></td><td id="12" class="food"></td><td id="13"></td><td id="14"></td><td id="15"></td><td id="16"></td><td id="17"></td>
+  <td id="10"></td><td id="11"></td><td id="12"></td><td id="13"></td><td id="14"></td><td id="15"></td><td id="16"></td><td id="17"></td>
 </tr>
 <tr>
   <td id="20"></td><td id="21"></td><td id="22"></td><td id="23"></td><td id="24"></td><td id="25"></td><td id="26"></td><td id="27"></td>
@@ -48,7 +48,7 @@ td {
   <td id="30"></td><td id="31"></td><td id="32"></td><td id="33"></td><td id="34"></td><td id="35"></td><td id="36"></td><td id="37"></td>
 </tr>
 <tr>
-  <td id="40"></td><td id="41"></td><td id="42"></td><td id="43"></td><td id="44" class="food"></td><td id="45"class="snake"></td><td id="46"></td><td id="47"></td>
+  <td id="40"></td><td id="41"></td><td id="42"></td><td id="43"></td><td id="44"></td><td id="45"></td><td id="46"></td><td id="47"></td>
 </tr>
 <tr>
   <td id="50"></td><td id="51"></td><td id="52"></td><td id="53"></td><td id="54"></td><td id="55"></td><td id="56"></td><td id="57"></td>
@@ -70,72 +70,88 @@ let snake = {
   length:1,
  }
 
+
+function getRandomInt(min, max) {
+  min = Math.ceil(min);
+  max = Math.floor(max);
+  return Math.floor(Math.random() * (max - min)) + min; //Максимум не включается, минимум включается
+}
+
+let startSnake = getRandomInt(0,64);
+let cell = document.querySelectorAll('td')[startSnake];
+cell.classList.add('snake');
+snake.headY = Number(cell.id.slice(0,1));
+snake.headX = Number(cell.id.slice(1));
+
+function putFood () {
+let startFood = getRandomInt(0,64);
+let cellFood = document.querySelectorAll('td')[startFood];
+cellFood.classList.add('food');
+}
+putFood();
+
 let pos = '';
 let memory = [];
 pos = table.rows[snake.headY].cells[snake.headX];
 memory.push(pos);
-//--------------------------Вверх-----------------------------------------
+let lastButton = '';
+
+//-------------------------------------------------------------------
 document.addEventListener('keydown', function(event) {
   if (event.code == 'KeyW' || event.code =='ArrowUp') {
-          move (-1,0);
-
-if (pos.classList.contains('food')) {
-eat(1,0);
-}
+    if (lastButton == 'S' && snake.length>1) return;
+  move (-1,0) ;
+      lastButton = 'W';
    }
 })
+
 document.addEventListener('keydown', function(event) {
   if (event.code == 'KeyS' || event.code =='ArrowDown') {
+     if (lastButton == 'W' && snake.length>1) return;
+     lastButton = 'S';
           move (1,0);
-
-if (pos.classList.contains('food')) {
-eat(-1,0);
-}
    }
 })
 document.addEventListener('keydown', function(event) {
   if (event.code == 'KeyA' || event.code =='ArrowLeft') {
+    if (lastButton == 'D' && snake.length>1) return;
+     lastButton = 'A';
         move (0,-1);
-if (pos.classList.contains('food')) {
-eat(0,1);
-}
    }
 })
 
 document.addEventListener('keydown', function(event) {
   if (event.code == 'KeyD' || event.code =='ArrowRight') {
+    if (lastButton == 'A' && snake.length>1) return;
+     lastButton = 'D';
           move (0,1);
-
-if (pos.classList.contains('food')) {
-eat(0,-1);
-}
    }
 })
 
-
-
-
 function move (Y, X) {
+ if (checkBorder(Y, X) == 'stop') return;
+ inertia(Y, X)
+memory = memory.slice(-snake.length);
 for (let elem of memory) {
 if (elem.classList.contains('snake')) {
-  console.log(elem)
-  elem.classList.remove('snake');
+   elem.classList.remove('snake');
     break;
 }
 }
-
-
-  
 pos = table.rows[snake.headY+=Y].cells[snake.headX+=X];
 pos.classList.add('snake');
 memory.push(pos);
-  console.log(memory)
+if (pos.classList.contains('food')) {
+eat();
+}
+ 
 }
 
-function eat(Y,X) {
+function eat() {
+   snake.length+=1;
 pos.classList.remove('food');
+putFood();
 let i = 0;
-  console.log(memory)
 for (let elem of memory) {
 if (elem.classList.contains('snake')) {
    memory[i-1].classList.add('snake');
@@ -145,9 +161,16 @@ i++;
 }
 }
 
+function checkBorder (Y,X) {
+if (table.rows[snake.headY+Y] == undefined || table.rows[snake.headY].cells[snake.headX+X]==undefined) return 'stop'
+}
 
+let go = '';
 
-
+function inertia (Y, X) {
+  if (go !='') clearInterval(go);
+go = setInterval(() => move(Y, X), 1000);
+}
 </script>
 
 </body>
