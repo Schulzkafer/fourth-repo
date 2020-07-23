@@ -28,6 +28,46 @@ td {
   background-repeat: no-repeat;
   background-position: center;
   }
+
+span{
+   position:relative;
+  /*left:50%;
+  transform: translate(-50%);*/
+  font-size:25px;
+  color:red;
+ }
+
+ #container {
+position:absolute;
+display:inline-block;
+top:10px;
+left:50%;
+    transform: translate(-50%);
+    width:250px;
+    height:120px;
+    background-color:gray;
+ border-radius: 5px;
+  z-index: 9000;
+  opacity: 0.8;
+ }
+ #Yes {
+  position:absolute;
+  background-color:yellow;
+  height:30px;
+  width:50px;
+  border-radius: 5px;
+  left:70px;
+  bottom:5px;
+ }
+ #No{
+  position:absolute;
+  background-color:olive;
+  height:30px;
+  width:50px;
+  left:130px;
+  bottom:5px;
+  border-radius: 3px;
+ }
 </style>
 
 </head>
@@ -86,18 +126,24 @@ snake.headX = Number(cell.id.slice(1));
 function putFood () {
 let startFood = getRandomInt(0,64);
 let cellFood = document.querySelectorAll('td')[startFood];
-cellFood.classList.add('food');
+if (cellFood.classList.contains('snake')) {
+putFood ();
+} else {
+  cellFood.classList.add('food');
+}
 }
 putFood();
 
 let pos = '';
 let memory = [];
+
 pos = table.rows[snake.headY].cells[snake.headX];
 memory.push(pos);
 let lastButton = '';
 
 //-------------------------------------------------------------------
-document.addEventListener('keydown', function(event) {
+
+document.addEventListener('keydown', function (event) {
   if (event.code == 'KeyW' || event.code =='ArrowUp') {
     if (lastButton == 'S' && snake.length>1) return;
   move (-1,0) ;
@@ -105,14 +151,14 @@ document.addEventListener('keydown', function(event) {
    }
 })
 
-document.addEventListener('keydown', function(event) {
+document.addEventListener('keydown', function (event) {
   if (event.code == 'KeyS' || event.code =='ArrowDown') {
      if (lastButton == 'W' && snake.length>1) return;
      lastButton = 'S';
           move (1,0);
    }
 })
-document.addEventListener('keydown', function(event) {
+document.addEventListener('keydown', function (event) {
   if (event.code == 'KeyA' || event.code =='ArrowLeft') {
     if (lastButton == 'D' && snake.length>1) return;
      lastButton = 'A';
@@ -120,14 +166,14 @@ document.addEventListener('keydown', function(event) {
    }
 })
 
-document.addEventListener('keydown', function(event) {
+document.addEventListener('keydown', function (event) {
   if (event.code == 'KeyD' || event.code =='ArrowRight') {
     if (lastButton == 'A' && snake.length>1) return;
      lastButton = 'D';
           move (0,1);
    }
 })
-
+//-------------------------------------------------------------------
 function move (Y, X) {
  if (checkBorder(Y, X) == 'stop') return;
  inertia(Y, X)
@@ -139,6 +185,7 @@ if (elem.classList.contains('snake')) {
 }
 }
 pos = table.rows[snake.headY+=Y].cells[snake.headX+=X];
+if (pos.classList.contains('snake')) stop();
 pos.classList.add('snake');
 memory.push(pos);
 if (pos.classList.contains('food')) {
@@ -162,7 +209,10 @@ i++;
 }
 
 function checkBorder (Y,X) {
-if (table.rows[snake.headY+Y] == undefined || table.rows[snake.headY].cells[snake.headX+X]==undefined) return 'stop'
+if (table.rows[snake.headY+Y] == undefined || table.rows[snake.headY].cells[snake.headX+X]==undefined) {
+   stop()
+  return 'stop';
+}
 }
 
 let go = '';
@@ -171,6 +221,27 @@ function inertia (Y, X) {
   if (go !='') clearInterval(go);
 go = setInterval(() => move(Y, X), 1000);
 }
+
+function stop() {
+  inertia(0,0);
+  clearInterval(go);
+  //document.removeEventListener('keydown', handler);
+      showConfirm();
+   }
+
+function showConfirm() {
+  let ask = "<div id='container'><center><span>Do you want to play again?</span></center><button id='Yes'>Yes</button><button id='No'>No</button></div>";
+  document.body.insertAdjacentHTML('afterbegin', ask);
+  document.addEventListener('keydown', pushYes)
+document.addEventListener('keydown', pushNo)
+}
+
+function pushNo () {
+  
+}
+
+
+
 </script>
 
 </body>
