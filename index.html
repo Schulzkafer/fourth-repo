@@ -23,7 +23,7 @@ td {
   background-color:red;
 }
 .food {
-  background: green url(pictures/rabbit.png);
+  background: yellow url(pictures/rabbit.png);
   background-size: 45px;
   background-repeat: no-repeat;
   background-position: center;
@@ -31,9 +31,7 @@ td {
 
 span{
    position:relative;
-  /*left:50%;
-  transform: translate(-50%);*/
-  font-size:25px;
+   font-size:25px;
   color:red;
  }
 
@@ -102,6 +100,9 @@ left:50%;
 
  <script>
 'use strict';
+
+function newGame () {
+
 let table = document.querySelector('table');
 let direction ='';
 let snake = {
@@ -143,36 +144,36 @@ let lastButton = '';
 
 //-------------------------------------------------------------------
 
-document.addEventListener('keydown', function (event) {
-  if (event.code == 'KeyW' || event.code =='ArrowUp') {
+
+document.addEventListener('keydown', handler) 
+
+function handler (event) {
+ if (event.code == 'KeyW' || event.code =='ArrowUp') {
     if (lastButton == 'S' && snake.length>1) return;
   move (-1,0) ;
       lastButton = 'W';
    }
-})
 
-document.addEventListener('keydown', function (event) {
   if (event.code == 'KeyS' || event.code =='ArrowDown') {
      if (lastButton == 'W' && snake.length>1) return;
      lastButton = 'S';
           move (1,0);
    }
-})
-document.addEventListener('keydown', function (event) {
-  if (event.code == 'KeyA' || event.code =='ArrowLeft') {
+
+   if (event.code == 'KeyA' || event.code =='ArrowLeft') {
     if (lastButton == 'D' && snake.length>1) return;
      lastButton = 'A';
         move (0,-1);
    }
-})
 
-document.addEventListener('keydown', function (event) {
   if (event.code == 'KeyD' || event.code =='ArrowRight') {
     if (lastButton == 'A' && snake.length>1) return;
      lastButton = 'D';
           move (0,1);
    }
-})
+
+}
+
 //-------------------------------------------------------------------
 function move (Y, X) {
  if (checkBorder(Y, X) == 'stop') return;
@@ -225,23 +226,35 @@ go = setInterval(() => move(Y, X), 1000);
 function stop() {
   inertia(0,0);
   clearInterval(go);
-  //document.removeEventListener('keydown', handler);
-      showConfirm();
+ document.removeEventListener('keydown', handler);
+            showConfirm();
    }
 
 function showConfirm() {
   let ask = "<div id='container'><center><span>Do you want to play again?</span></center><button id='Yes'>Yes</button><button id='No'>No</button></div>";
   document.body.insertAdjacentHTML('afterbegin', ask);
-  document.addEventListener('keydown', pushYes)
-document.addEventListener('keydown', pushNo)
+  document.getElementById('Yes').addEventListener('click', pushYes)
+document.getElementById('No').addEventListener('click', pushNo)
 }
 
 function pushNo () {
-  
+  document.getElementById('container').remove();
+  document.removeEventListener('click', pushYes);
+  document.removeEventListener('click', pushNo)
 }
 
+function pushYes() {
+    document.getElementById('container').remove();
+  document.removeEventListener('click', pushYes);
+  document.removeEventListener('click', pushNo);
+document.getElementsByClassName('food')[0].classList.remove('food');
+Array.from(document.getElementsByClassName('snake')).map((x)=> x.classList.remove('snake'));
+newGame();
+}
 
+}
 
+newGame();
 </script>
 
 </body>
